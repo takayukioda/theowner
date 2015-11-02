@@ -1,0 +1,4 @@
+---
+admin_user: "theone"
+admin_password: "$6$some-salt-here$hashed-password"
+# $6$ stands for sha-256
