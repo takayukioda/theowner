@@ -1,4 +1,4 @@
 - hosts: vagrant
   sudo: no
   roles:
-    - accounts
+    - owner
