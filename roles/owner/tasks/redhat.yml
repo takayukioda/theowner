@@ -21,14 +21,14 @@
   changed_when: false
 - name: Verify existant of ssh-key
   delegate_to: 127.0.0.1
-  shell: test -f {{ inventory_hostname }}_{{ owner_name }}_rsa.pub
+  shell: test -f "ssh/{{ inventory_hostname }}_{{ owner_name }}_rsa.pub"
   register: verify_sshkey
   failed_when: false
   changed_when: verify_sshkey.rc != 0
 - name: Generate ssh key in local
   when: verify_sshkey | changed
   delegate_to: 127.0.0.1
-  command: ssh-keygen -b 2048 -t rsa -P "" -f {{ inventory_hostname }}_{{ owner_name }}_rsa
+  command: ssh-keygen -b 2048 -t rsa -P "" -f "ssh/{{ inventory_hostname }}_{{ owner_name }}_rsa"
 - name: Upload authorized_key
   sudo: yes
   sudo_user: "{{ owner_name }}"
@@ -37,4 +37,4 @@
     user: "{{ owner_name }}"
     key: "{{ item }}"
   with_file:
-    - "{{ inventory_hostname }}_{{ owner_name }}_rsa.pub"
+    - "ssh/{{ inventory_hostname }}_{{ owner_name }}_rsa.pub"
