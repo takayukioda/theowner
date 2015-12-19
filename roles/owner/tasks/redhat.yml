@@ -14,9 +14,8 @@
   template:
     src: owner.j2
     dest: /etc/sudoers.d/{{ owner_name }}
-  validate: 'visudo -cf %s'
+    validate: "visudo -cf %s"
 - name: Set password for owner
   sudo: yes
   shell: echo "{{ owner_name }}:{{ owner_password }}" | chpasswd --crypt-method=SHA512
-  register: change_password
   changed_when: false
