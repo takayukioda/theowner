@@ -1,43 +1,22 @@
 ---
-- name: "Debian: Create admin account"
-  when: ansible_os_family == "Debian"
+- name: Create owner account
   sudo: yes
   user:
     state: present
-    name: "{{ admin_user }}"
-    password: "{{ admin_password }}"
-    comment: "{{ admin_comment }}"
-    append: yes
-    groups: sudo,admin
-  tags:
-    - accounts
-    - debian
-- name: sudo group as sudoers
-  when: ansible_os_family == "Debian"
-  sudo: yes
-  lineinfile:
-    destfile: /etc/sudoers
-    backup: yes
-  line: "%sudo        ALL=(ALL:ALL)"
-  regexp: "^#?\s*%sudo"
-- name: "RedHat: Create admin account"
-  when: ansible_os_family == "RedHat"
-  sudo: yes
-  user:
-    state: present
-    name: "{{ admin_user }}"
-    password: "{{ admin_password }}"
-    comment: "{{ admin_comment }}"
+    name: "{{ owner_name }}"
+    comment: "{{ owner_comment }}"
     append: yes
     groups: wheel
   tags:
-    - accounts
     - redhat
-- name: wheel group as sudoers
-  when: ansible_os_family == "RedHat"
+- name: Set wheel group as sudoers
   sudo: yes
-  lineinfile:
-    destfile: /etc/sudoers
-    backup: yes
-  line: "%wheel        ALL=(ALL)       NOPASSWD: ALL"
-  regexp: "^#?\s*%wheel"
+  template:
+    src: owner.j2
+    dest: /etc/sudoers.d/{{ owner_name }}
+  validate: 'visudo -cf %s'
+- name: Set password for owner
+  sudo: yes
+  shell: echo "{{ owner_name }}:{{ owner_password }}" | chpasswd --crypt-method=SHA512
+  register: change_password
+  changed_when: false
