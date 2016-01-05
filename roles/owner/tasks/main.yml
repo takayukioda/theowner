@@ -1,3 +1,5 @@
 - include_vars: private.yml
 - include: redhat.yml 
   when: ansible_os_family == "RedHat"
+- include: debian.yml 
+  when: ansible_os_family == "Debian"
